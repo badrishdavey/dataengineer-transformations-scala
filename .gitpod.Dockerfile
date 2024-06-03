@@ -1,9 +1,16 @@
-FROM gitpod/workspace-full
+FROM sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.12.16 AS build
 
-SHELL ["/bin/bash", "-c"]
-USER gitpod
+#ENV SBT_VERSION 1.7.1
+USER root
+WORKDIR /opt
+RUN  apt-get update \
+  && apt-get install -y wget \
+  && rm -rf /var/lib/apt/lists/*
+RUN wget https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz
+RUN tar xvf spark-3.3.0-bin-hadoop3.tgz
+ENV PATH="/opt/spark-3.3.0-bin-hadoop3/bin:$PATH"
 
-RUN curl -s "https://get.sdkman.io" | bash
-RUN . /home/gitpod/.sdkman/bin/sdkman-init.sh && sdk update
-RUN . /home/gitpod/.sdkman/bin/sdkman-init.sh && sdk install java $(sdk list java | grep -o "8\.[0-9]*\.[0-9]*\.hs-adpt" | head -1)
-RUN . /home/gitpod/.sdkman/bin/sdkman-init.sh && sdk install sbt 1.8.0
+#TODO : Change the user to non root user
+#USER 185
+WORKDIR /app
+ENTRYPOINT ["tail", "-f", "/dev/null"]
